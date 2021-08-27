@@ -7,14 +7,12 @@ output: html_document
 
 
 ```{r}
-install.packages("corrplot")
 library(corrplot)
 library(gplots)
 library(RColorBrewer)
-
 ```
 
-#exploring the dataset
+**Exploring the dataset**
 
 ```{r}
 getwd()
@@ -22,7 +20,7 @@ brand.ratings<-read.csv("PRST_brand_data.csv")
 head(brand.ratings)
 tail(brand.ratings)
 ```
-each of the 305 simulated respondents has observations for each of the 10 variables so there are in total of 3050 rows.
+#each of the 305 simulated respondents has observations for each of the 10 variables so there are in total of 3050 rows.
 
 
 ```{r}
@@ -31,17 +29,17 @@ str(brand.ratings)
 ```
 there are 9 numeric variable (adjectives) and one categorical variable i.e. brand
 
-#scaling the data
+**scaling the data**
+
 ```{r}
 pstr.sc<-brand.ratings
 pstr.sc<-scale(brand.ratings[,-10])
 summary(pstr.sc)
-
 ```
 
-removing brand column i.e. categorical variable because we can only scale numerical variable  (mean value is 0).
+#removing brand column i.e. categorical variable because we can only scale numerical variable  (mean value is 0).
 
-#corrplot to inpect bivariate relationship among variables.
+**corrplot to inpect bivariate relationship among variables**
 
 ```{r}
 
@@ -58,7 +56,7 @@ There are many pairs which are not at all correlated (23 pairs). They are having
 
 
 
-#aggregate mean ratings by brand
+**aggregate mean ratings by brand**
 ```{r}
 brand.mean <- aggregate(.~Brand, data=brand.ratings, mean)
 brand.mean
@@ -66,7 +64,8 @@ brand.mean
 
 
 
-#creating matrix with brand name as rows.
+**creating matrix with brand name as rows**
+
 ```{r}
 rownames(brand.mean)<- brand.mean[,1]
 brand.mean<- brand.mean[,-1]
@@ -75,7 +74,7 @@ brand.mean
 ```
 
 
-#creating heatmaps for visualization of brand mean data
+**creating heatmaps for visualization of brand mean data**
 ```{r}
 
 heatmap.2(as.matrix(brand.mean), 
@@ -84,13 +83,14 @@ col=brewer.pal(9, "BuGn"), trace="none", key=FALSE, dend="none",  main="\n\n\n\n
 
 sierra brand is more reliable on cutting edge, romeo is reliable on friendly and adaptable,tango is reliable on cutting edge, exciting and delightful and papa is reliable on helpful, friendly and adaptable.
 
-#PCA For brand ratings
+**PCA For brand ratings**
+
 ```{r}
 brand.pc<-prcomp(pstr.sc[,1:9])
 summary(brand.pc)
 ```
 
-**1.7 Screeplot on PCA for brand ratings**
+**Screeplot on PCA for brand ratings**
 The default plot() for a PCA is a scree plot, which shows the successive proportion of additional variance that each component adds. We plot this as a line chart using type="l" (lower case “L” for line):
 
 ```{r}
@@ -98,7 +98,7 @@ plot(brand.pc, type="l")#scree plot line chart
 
 ```
 
-**1.8 Running biplot of PCA for brand ratings on individual respondents**
+**Running biplot of PCA for brand ratings on individual respondents**
 
 ```{r}
 biplot(brand.pc)#biplot of first two factors/principal components
@@ -106,7 +106,7 @@ biplot(brand.pc)#biplot of first two factors/principal components
 
 But there is a problem: the plot of individual respondents’ ratings is too dense and it does not tell us about the brand positions! A better solution is to perform PCA using aggregated ratings by brand. First we remind ourselves of the data that compiled the mean rating of each adjective by brand as we found above using aggregate()
 
-**1.9 Running PCA for brand ratings on mean**
+**Running PCA for brand ratings on mean**
 ```{r}
 brand.mean 
 brand.mu.pc <- prcomp(brand.mean, scale=TRUE)
@@ -114,8 +114,8 @@ summary(brand.mu.pc)
 ```
 
 In the call to prcomp(),we added scale=TRUE in order to rescale the data;even though the raw data was already rescaled, the aggregated means have a somewhat different scale than the standardized data itself. The results show that the ﬁrst two components account for 84 % of the explainable variance in the mean ratings, so we focus on interpreting results with regard to them.
-#Perceptual Map of the Brands
-#Running biplot of PCA for brand ratings on mean
+**Perceptual Map of the Brands
+  Running biplot of PCA for brand ratings on mean**
 ```{r}
 biplot(brand.mu.pc, main="Brand positioning", cex=c(1,0.7))
 prst.pc <- prcomp(brand.mean)
@@ -128,7 +128,7 @@ biplot(prst.pc, choices=2:3)
 
 In PC1 & PC2 component analysis we can interpret that:-
 1.romeo brand is close to center and almost generic in nature and high on the adjectives friendly,intuitive and helpful.
-2. papa brand is high on adaptable adjective whereas sierra and tango positioning is not well defined as the customers and not perceiving these brands on any adjectives in pc1 and pc2 analysis.
+2. papa brand is high on adaptable adjective whereas sierra and tango positioning is not well defined in the minds of customers and customers are not perceiving these brands on any adjectives in pc1 and pc2 analysis.
 3.customers are treating adjectives (friendly, helpful and intuitive) as one as they are overlapping and close to each other same in the case of (generous, cutting edge, delightful and exciting).
 
 In PC2 and PC3 analysis we can interpret that:-
@@ -137,6 +137,7 @@ In PC2 and PC3 analysis we can interpret that:-
 3.tango is high on best value and lies somewhere between best value, generous and helpful.
 
 yes, the interpretation has been changed from pc1&pc2 to pc2 & pc3 because in pc1 and pc2 the tango brand positioning is not well defined whereas in pc2 and pc3 people are relating to the brand based on best value adjective.
+
 ```{r}
 brand.mean["Sierra",]-brand.mean["Tango",]
 
